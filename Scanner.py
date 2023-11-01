@@ -24,8 +24,7 @@ x := x - 1
 until x = 0;
 write fact { output factorial of x 
 }
-end
-'''
+end'''
 
 
 class Scanner():
@@ -85,10 +84,13 @@ class Scanner():
                             self.i = j
                             return self.get_next_token()
                 while True:
-                    if self.code[j-1].isalpha():
+
+                    if self.code[j-1].isalpha() and j < len(code):
                         #print("self.code[j-1].isalpha(): "+str(self.code[j-1].isalpha()))
-                        temp += str(self.code[j-1])
+                        temp += str(self.code[j - 1])
                         j += 1
+                        if j == len(code):
+                            temp += str(self.code[j - 1])
                     else:
                         #print(temp)
                         if temp in self.Reserved_Words:
@@ -99,7 +101,6 @@ class Scanner():
                             return [temp, "Identifier"]
 
 sc = Scanner(code)
-
-for k in range(40):
+for k in range(50):
     print(sc.get_next_token())
     #print(" iteration number:"+str(k))
