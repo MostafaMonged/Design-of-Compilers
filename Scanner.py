@@ -24,7 +24,8 @@ x := x - 1
 until x = 0;
 write fact { output factorial of x 
 }
-end'''
+end
+'''
 
 
 class Scanner():
