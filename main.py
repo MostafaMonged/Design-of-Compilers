@@ -8,7 +8,7 @@ class MyGUI(QMainWindow):
 
         # Creating the main window
         self.setGeometry(100, 100, 800, 600)
-        self.setWindowTitle('Scanner Application')
+        self.setWindowTitle("Scanner Application")
 
         # Center the main window on the screen
         screen = QDesktopWidget().screenGeometry()
@@ -18,7 +18,7 @@ class MyGUI(QMainWindow):
         self.move(x, y)
 
         # Load icon from the file
-        icon = QIcon('icon.png')
+        icon = QIcon("icon.png")
         self.setWindowIcon(icon)
 
         # Load the css
@@ -32,7 +32,7 @@ class MyGUI(QMainWindow):
         layout = QVBoxLayout()
 
         # Input label
-        self.input_label = QLabel('Input:')
+        self.input_label = QLabel("Input:")
         layout.addWidget(self.input_label)
 
         # Text box for code input
@@ -40,27 +40,27 @@ class MyGUI(QMainWindow):
         layout.addWidget(self.code_editor)
 
         # Load File button
-        load_button = QPushButton('Load File')
+        load_button = QPushButton("Load File")
         load_button.clicked.connect(self.loadFile)
         layout.addWidget(load_button)
 
         # Scan button
-        scan_button = QPushButton('Scan')
+        scan_button = QPushButton("Scan")
         scan_button.clicked.connect(self.scanCode)
         layout.addWidget(scan_button)
 
         # Parse button
-        parse_button = QPushButton('Parse')
+        parse_button = QPushButton("Parse")
         parse_button.clicked.connect(self.parseCode)
         layout.addWidget(parse_button)
 
         # Export button
-        export_button = QPushButton('Export File')
+        export_button = QPushButton("Export File")
         export_button.clicked.connect(self.exportFile)
         layout.addWidget(export_button)
 
         # Output label
-        self.output_label = QLabel('Output:')
+        self.output_label = QLabel("Output:")
         layout.addWidget(self.output_label)
 
         # Text box for output display
@@ -72,11 +72,12 @@ class MyGUI(QMainWindow):
 
     def loadFile(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getOpenFileName(self, 'Open File', '', 'All Files (*);;Text Files (*.txt)',
-                                                   options=options)
+        file_name, _ = QFileDialog.getOpenFileName(
+            self, "Open File", "", "All Files (*);;Text Files (*.txt)", options=options
+        )
 
         if file_name:
-            with open(file_name, 'r') as file:
+            with open(file_name, "r") as file:
                 file_contents = file.read()
                 self.code_editor.setPlainText(file_contents)
 
@@ -92,10 +93,12 @@ class MyGUI(QMainWindow):
 
     def exportFile(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getSaveFileName(self, 'Save File', '', 'Text Files (*.txt)', options=options)
+        file_name, _ = QFileDialog.getSaveFileName(
+            self, "Save File", "", "Text Files (*.txt)", options=options
+        )
 
         if file_name:
-            with open(file_name, 'w') as file:
+            with open(file_name, "w") as file:
                 output_text = self.output_editor.toPlainText()
                 file.write(output_text)
 
