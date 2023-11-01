@@ -1,17 +1,4 @@
 
-# character = '.'
-# if character.isalpha():
-#     print("The character is alphabetical.")
-# else:
-#     print("The character is not alphabetical.")
-#elif (code[self.i] not in Special_Symbols) and code[self.i] != ":" and code[self.i] == " ":
-#print("else" in Reserved_Words)
-# character = '5'
-# if character.isdigit():
-#     print("The character is a numeric digit.")
-# else:
-#     print("The character is not a numeric digit.")
-
 code ='''{ Sample program in TINY language –
 computes factorial}
 read x; {input an integer }
@@ -25,7 +12,6 @@ until x = 0;
 write fact { output factorial of x 
 }
 end'''
-
 
 class Scanner():
     def __init__(self, code):
@@ -91,6 +77,7 @@ class Scanner():
                         j += 1
                         if j == len(code):
                             temp += str(self.code[j - 1])
+                            self.finish = True
                     else:
                         #print(temp)
                         if temp in self.Reserved_Words:
