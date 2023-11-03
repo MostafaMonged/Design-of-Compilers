@@ -23,30 +23,30 @@ class Scanner:
     def __init__(self):
         self.code = ""
         self.i = 1
-        self.Reserved_Words = [
-            "if",
-            "then",
-            "else",
-            "end",
-            "repeat",
-            "until",
-            "read",
-            "write",
-        ]
-        self.Special_Symbols = [
-            "+",
-            "-",
-            "*",
-            "/",
-            "=",
-            "<",
-            "(",
-            ")",
-            ";",
-            ":=",
-            "{",
-            "}",
-        ]
+        self.Reserved_Words = {
+            "if": "IF",
+            "then": "THEN",
+            "else": "ELSE",
+            "end": "END",
+            "repeat": "REPEAT",
+            "until": "UNTIL",
+            "read": "READ",
+            "write": "READ"
+        }
+        self.Special_Symbols = {
+            "+": "PLUS",
+            "-": "MINUS",
+            "*": "MULT",
+            "/": "DIV",
+            "=": "EQUAL",
+            "<": "LESSTHAN",
+            "(": "OPENBRACKET",
+            ")": "CLOSEDBRACKET",
+            ";": "SEMICOLON",
+            ":=": "ASSIGN",
+            "{": "COMMENTSTART",
+            "}": "COMMENTEND"
+        }
         self.inside_comment = False
         self.finish = False
 
@@ -66,14 +66,14 @@ class Scanner:
         ] == ":":
             if self.code[self.i - 1] == ":" and self.code[self.i] == "=":
                 self.i += 2
-                return [":=", "Special_Symbol"]
+                return [":=", self.Special_Symbols[":="]]
             else:
                 if self.code[self.i - 1] == "{":
                     self.inside_comment = True
                 if self.code[self.i - 1] == "}":
                     self.inside_comment = False
                 self.i += 1
-                return [self.code[self.i - 2], "Special_Symbol"]
+                return [self.code[self.i - 2], self.Special_Symbols[self.code[self.i - 2]]]
         elif self.code[self.i - 1] == " ":
             self.i += 1
             return self.get_next_token()
@@ -92,7 +92,7 @@ class Scanner:
                         break
                 else:
                     break
-            return [temp3, "number"]
+            return [temp3, "NUMBER"]
         else:
             temp = ""
             temp2 = ""
@@ -120,10 +120,10 @@ class Scanner:
                             # print(temp)
                             if temp in self.Reserved_Words:
                                 self.i = j
-                                return [temp, "Reserved_Word"]
+                                return [temp, self.Reserved_Words[temp]]
                             else:
                                 self.i = j
-                                return [temp, "Identifier"]
+                                return [temp, "IDENTIFIER"]
 
     def scan(self):
         gui_show_list = []
@@ -135,6 +135,7 @@ class Scanner:
         return gui_show_list
 
 
+#this main is used to test Scanner class
 # if __name__ == "__main__":
 #     sc = Scanner(code)
 #     print(sc.scan())
