@@ -122,12 +122,19 @@ class Scanner:
                             self.i = j
                             return [temp, "Identifier"]
 
+    def scan(self):
+        gui_show_list = []
+        while not self.finish:
+            next_token = self.get_next_token()
+            if next_token is not None:
+                gui_show_tuple = (str(next_token[0]), str(next_token[1]))
+                gui_show_list.append(gui_show_tuple)
+        return gui_show_list
 
-if __name__ == "__main__":
-    sc = Scanner(code)
-    for k in range(40):
-        print(sc.get_next_token())
-        # print(" iteration number:"+str(k))
-    sc.another_code(code_sum)
-    for k in range(23):
-        print(sc.get_next_token())
+
+# if __name__ == "__main__":
+#     sc = Scanner(code)
+#     print(sc.scan())
+#     print()
+#     sc.another_code(code_sum)
+#     print(sc.scan())
