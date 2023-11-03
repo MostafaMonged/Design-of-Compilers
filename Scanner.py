@@ -124,6 +124,9 @@ class Scanner:
                             else:
                                 self.i = j
                                 return [temp, "IDENTIFIER"]
+            else:
+                self.i += 1
+                return self.get_next_token()
 
     def scan(self):
         gui_show_list = []
@@ -135,7 +138,7 @@ class Scanner:
         return gui_show_list
 
 
-#this main is used to test Scanner class
+# this main is used to test Scanner class
 # if __name__ == "__main__":
 #     sc = Scanner(code)
 #     print(sc.scan())
