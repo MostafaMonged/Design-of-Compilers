@@ -10,7 +10,7 @@ class MyGUI(QMainWindow):
         super(MyGUI, self).__init__()
 
         # Creating the main window
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 850, 600)
         self.setWindowTitle("Scanner Application")
 
         # Center the main window on the screen
