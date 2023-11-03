@@ -16,8 +16,7 @@ code_sum = """{ Sample program in TINY language – computes sum of x and y}
 read x; {input an integer }
 read y; {input an integer }
 sum := x + y;
-write sum; { output sum of x and y }
-"""
+write sum; { output sum of x and y }"""
 
 
 class Scanner:
@@ -58,7 +57,7 @@ class Scanner:
         self.finish = False
 
     def get_next_token(self):
-        if self.i >= len(self.code):
+        if self.i > len(self.code):
             self.finish = True
             return
         j = self.i
@@ -85,9 +84,12 @@ class Scanner:
             temp3 = self.code[self.i - 1]
             self.i += 1
             while True:
-                if self.code[self.i - 1].isdigit():
-                    temp3 += self.code[self.i - 1]
-                    self.i += 1
+                if self.i <= len(self.code):
+                    if self.code[self.i - 1].isdigit():
+                        temp3 += self.code[self.i - 1]
+                        self.i += 1
+                    else:
+                        break
                 else:
                     break
             return [temp3, "number"]
@@ -105,22 +107,23 @@ class Scanner:
                             self.inside_comment = False
                             self.i = j
                             return self.get_next_token()
-                while True:
-                    if self.code[j - 1].isalpha() and j < len(self.code):
-                        # print("self.code[j-1].isalpha(): "+str(self.code[j-1].isalpha()))
-                        temp += str(self.code[j - 1])
-                        j += 1
-                        if j == len(self.code):
+                else:
+                    while True:
+                        if self.code[j - 1].isalpha() and j < len(self.code):
+                            # print("self.code[j-1].isalpha(): "+str(self.code[j-1].isalpha()))
                             temp += str(self.code[j - 1])
-                            self.finish = True
-                    else:
-                        # print(temp)
-                        if temp in self.Reserved_Words:
-                            self.i = j
-                            return [temp, "Reserved_Word"]
+                            j += 1
+                            if j == len(self.code) and self.code[j - 1].isalpha():
+                                temp += str(self.code[j - 1])
+                                self.finish = True
                         else:
-                            self.i = j
-                            return [temp, "Identifier"]
+                            # print(temp)
+                            if temp in self.Reserved_Words:
+                                self.i = j
+                                return [temp, "Reserved_Word"]
+                            else:
+                                self.i = j
+                                return [temp, "Identifier"]
 
     def scan(self):
         gui_show_list = []
@@ -138,3 +141,10 @@ class Scanner:
 #     print()
 #     sc.another_code(code_sum)
 #     print(sc.scan())
+
+    # while not sc.finish:
+    #     print(sc.get_next_token())
+    # print("*************another_code***********")
+    # sc.another_code(code_sum)
+    # while not sc.finish:
+    #     print(sc.get_next_token())
