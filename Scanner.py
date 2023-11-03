@@ -20,8 +20,8 @@ write sum; { output sum of x and y }"""
 
 
 class Scanner:
-    def __init__(self, tiny_code):
-        self.code = tiny_code
+    def __init__(self):
+        self.code = ""
         self.i = 1
         self.Reserved_Words = [
             "if",

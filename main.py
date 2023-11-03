@@ -1,5 +1,8 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
+
+from Scanner import Scanner
 
 
 class MyGUI(QMainWindow):
@@ -24,50 +27,66 @@ class MyGUI(QMainWindow):
         # Load the css
         self.setStyleSheet(open("dark_mode.css").read())
 
-        # Creating the main widget
+        # Creating the widgets
         main_widget = QWidget(self)
+        left_widget = QWidget(self)
+        middle_widget = QWidget(self)
+        right_widget = QWidget(self)
         self.setCentralWidget(main_widget)
 
-        # Creating the layout
-        layout = QVBoxLayout()
+        # Creating the layouts
+        layout = QHBoxLayout()
+        left_layout = QVBoxLayout()
+        middle_layout = QVBoxLayout()
+        right_layout = QVBoxLayout()
+        layout.addWidget(left_widget)
+        layout.addWidget(middle_widget)
+        layout.addWidget(right_widget)
 
         # Input label
         self.input_label = QLabel("Input:")
-        layout.addWidget(self.input_label)
+        left_layout.addWidget(self.input_label)
 
         # Text box for code input
         self.code_editor = QTextEdit()
-        layout.addWidget(self.code_editor)
+        left_layout.addWidget(self.code_editor)
 
         # Load File button
         load_button = QPushButton("Load File")
         load_button.clicked.connect(self.loadFile)
-        layout.addWidget(load_button)
+        middle_layout.addWidget(load_button)
 
         # Scan button
         scan_button = QPushButton("Scan")
         scan_button.clicked.connect(self.scanCode)
-        layout.addWidget(scan_button)
+        middle_layout.addWidget(scan_button)
 
         # Parse button
         parse_button = QPushButton("Parse")
         parse_button.clicked.connect(self.parseCode)
-        layout.addWidget(parse_button)
+        middle_layout.addWidget(parse_button)
 
         # Export button
         export_button = QPushButton("Export File")
         export_button.clicked.connect(self.exportFile)
-        layout.addWidget(export_button)
+        middle_layout.addWidget(export_button)
 
         # Output label
         self.output_label = QLabel("Output:")
-        layout.addWidget(self.output_label)
+        right_layout.addWidget(self.output_label)
 
-        # Text box for output display
-        self.output_editor = QTextEdit()
-        layout.addWidget(self.output_editor)
+        # Table for output display
+        self.output_table = QTableWidget(self)
+        self.output_table.setColumnCount(2)  # Two columns for the tuple elements
+        self.output_table.setHorizontalHeaderLabels(["Token", "Type"])  # Column headers
+        self.output_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.output_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        right_layout.addWidget(self.output_table)
 
         # Setting the layout
+        left_widget.setLayout(left_layout)
+        middle_widget.setLayout(middle_layout)
+        right_widget.setLayout(right_layout)
         main_widget.setLayout(layout)
 
     def loadFile(self):
@@ -77,19 +96,28 @@ class MyGUI(QMainWindow):
         )
 
         if file_name:
-            with open(file_name, "r") as file:
+            with open(file_name, "r", encoding='utf-8') as file:
                 file_contents = file.read()
                 self.code_editor.setPlainText(file_contents)
 
     def scanCode(self):
-        # Implement your scanning logic here
-        scanned_output = "Scanning result will be displayed here."
-        self.output_editor.setPlainText(scanned_output)
+        scanner.another_code(self.code_editor.toPlainText().rstrip())
+        scanner_output = scanner.scan()
+
+        # Clear the table before adding new data
+        self.output_table.setRowCount(0)
+
+        for item in scanner_output:
+            # Add a new row to the table
+            rowPosition = self.output_table.rowCount()
+            self.output_table.insertRow(rowPosition)
+
+            # Set the values from the tuple into the columns
+            self.output_table.setItem(rowPosition, 0, QTableWidgetItem(str(item[0])))
+            self.output_table.setItem(rowPosition, 1, QTableWidgetItem(str(item[1])))
 
     def parseCode(self):
-        # Implement your parsing logic here
-        parsed_output = "Parsing result will be displayed here."
-        self.output_editor.setPlainText(parsed_output)
+        pass
 
     def exportFile(self):
         options = QFileDialog.Options()
@@ -99,11 +127,15 @@ class MyGUI(QMainWindow):
 
         if file_name:
             with open(file_name, "w") as file:
-                output_text = self.output_editor.toPlainText()
-                file.write(output_text)
+                # Export the table data
+                for row in range(self.output_table.rowCount()):
+                    column1 = self.output_table.item(row, 0).text()
+                    column2 = self.output_table.item(row, 1).text()
+                    file.write(f"{column1}\t{column2}\n")
 
 
 if __name__ == "__main__":
+    scanner = Scanner()
     app = QApplication([])
     window = MyGUI()
     window.show()

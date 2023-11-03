@@ -8,14 +8,15 @@ QTextEdit, QLineEdit {
     color: #fff;
     border: 1px solid #555;
     selection-background-color: #666;
+    font-size: 16px;
 }
 
 QPushButton {
     background-color: #222;
     color: #fff;
     border: 1px solid #333;
-    padding: 10px 20px; /* Adjust the padding to make the buttons bigger */
-    font-size: 16px;    /* Increase the font size for the buttons */
+    padding: 10px 20px;
+    font-size: 16px;
 }
 
 QPushButton:hover {
@@ -24,4 +25,24 @@ QPushButton:hover {
 
 QLabel {
     color: #fff;
+}
+
+QTableWidget {
+    background-color: #444;
+    color: #fff;
+}
+
+QTableWidget QHeaderView::section {
+    background-color: #333;
+    color: #fff;
+}
+
+QTableWidget::item {
+    background-color: #444;
+    color: #fff;
+    font-size: 16px;
+}
+
+QTableWidget::item:selected {
+    background-color: #666;
 }
