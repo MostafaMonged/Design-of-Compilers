@@ -103,14 +103,17 @@ class Scanner:
             return [temp3, "NUMBER"]
         else:
             temp = ""
-            temp2 = ""
+            #temp2 = ""
             if self.code[self.i - 1].isalpha():
                 if self.inside_comment:
                     # print(self.inside_comment)
                     while True:
                         if j <= len(self.code):
                             if self.code[j - 1] != "}":
-                                temp2 += str(self.code[j - 1])
+                                if self.code[j - 1] == "{":
+                                    #self.inside_comment = False
+                                    self.i = j
+                                    return self.get_next_token()
                                 j += 1
                             else:
                                 self.inside_comment = False
