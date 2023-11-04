@@ -31,7 +31,7 @@ class Scanner:
             "repeat": "REPEAT",
             "until": "UNTIL",
             "read": "READ",
-            "write": "READ"
+            "write": "WRITE"
         }
         self.Special_Symbols = {
             "+": "PLUS",
@@ -64,9 +64,17 @@ class Scanner:
         if (self.code[self.i - 1] in self.Special_Symbols) or self.code[
             self.i - 1
         ] == ":":
-            if self.code[self.i - 1] == ":" and self.code[self.i] == "=":
-                self.i += 2
-                return [":=", self.Special_Symbols[":="]]
+            if self.code[self.i - 1] == ":":
+                if self.i < len(self.code):
+                    if self.code[self.i] == "=":
+                        self.i += 2
+                        return [":=", self.Special_Symbols[":="]]
+                    else:
+                        self.i += 1
+                        return self.get_next_token()
+                else:
+                    self.i += 1
+                    return self.get_next_token()
             else:
                 if self.code[self.i - 1] == "{":
                     self.inside_comment = True
@@ -100,13 +108,21 @@ class Scanner:
                 if self.inside_comment:
                     # print(self.inside_comment)
                     while True:
-                        if self.code[j - 1] != "}":
-                            temp2 += str(self.code[j - 1])
-                            j += 1
+                        if j <= len(self.code):
+                            if self.code[j - 1] != "}":
+                                temp2 += str(self.code[j - 1])
+                                j += 1
+                            else:
+                                self.inside_comment = False
+                                self.i = j
+                                return self.get_next_token()
                         else:
-                            self.inside_comment = False
+                            # self.inside_comment = False
+                            # self.i += 1
+                            # return self.get_next_token()
                             self.i = j
                             return self.get_next_token()
+
                 else:
                     while True:
                         if self.code[j - 1].isalpha() and j < len(self.code):
@@ -140,15 +156,15 @@ class Scanner:
 
 # this main is used to test Scanner class
 # if __name__ == "__main__":
-#     sc = Scanner(code)
-#     print(sc.scan())
-#     print()
+#       sc = Scanner(code)
+# #     print(sc.scan())
+# #     print()
+# #     sc.another_code(code_sum)
+# #     print(sc.scan())
+#
+#     while not sc.finish:
+#         print(sc.get_next_token())
+#     print("*************another_code***********")
 #     sc.another_code(code_sum)
-#     print(sc.scan())
-
-    # while not sc.finish:
-    #     print(sc.get_next_token())
-    # print("*************another_code***********")
-    # sc.another_code(code_sum)
-    # while not sc.finish:
-    #     print(sc.get_next_token())
+#     while not sc.finish:
+#         print(sc.get_next_token())
