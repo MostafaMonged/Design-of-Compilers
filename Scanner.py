@@ -75,11 +75,23 @@ class Scanner:
                             self.i += 1
                             return self.get_next_token()
                     else:
+                        # self.i += 1
+                        # return self.get_next_token()
+                        if not self.inside_comment:
+                            self.i += 1
+                            return [self.code[self.i - 2], "ILLEGAL_SYMBOL"]
+                        else:
+                            self.i += 1
+                            return self.get_next_token()
+                else:
+                    # self.i += 1
+                    # return self.get_next_token()
+                    if not self.inside_comment:
+                        self.i += 1
+                        return [self.code[self.i - 2], "ILLEGAL_SYMBOL"]
+                    else:
                         self.i += 1
                         return self.get_next_token()
-                else:
-                    self.i += 1
-                    return self.get_next_token()
             else:
                 if self.code[self.i - 1] == "{":
                     self.inside_comment = True
