@@ -4,6 +4,56 @@ from PyQt5.QtWidgets import *
 
 from Scanner import Scanner
 
+css = """QMainWindow {
+    background-color: #333;
+    color: #fff;
+}
+
+QTextEdit, QLineEdit {
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #555;
+    selection-background-color: #666;
+    font-size: 16px;
+}
+
+QPushButton {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+QPushButton:hover {
+    background-color: #444;
+}
+
+QLabel {
+    color: #fff;
+}
+
+QTableWidget {
+    background-color: #444;
+    color: #fff;
+}
+
+QTableWidget QHeaderView::section {
+    background-color: #333;
+    color: #fff;
+}
+
+QTableWidget::item {
+    background-color: #444;
+    color: #fff;
+    font-size: 16px;
+}
+
+QTableWidget::item:selected {
+    background-color: #666;
+}
+"""
+
 
 class MyGUI(QMainWindow):
     def __init__(self):
@@ -25,7 +75,7 @@ class MyGUI(QMainWindow):
         self.setWindowIcon(icon)
 
         # Load the css
-        self.setStyleSheet(open("dark_mode.css").read())
+        self.setStyleSheet(css)
 
         # Creating the widgets
         main_widget = QWidget(self)
