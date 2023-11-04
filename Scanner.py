@@ -64,11 +64,16 @@ class Scanner:
         if (self.code[self.i - 1] in self.Special_Symbols) or self.code[
             self.i - 1
         ] == ":":
+
             if self.code[self.i - 1] == ":":
                 if self.i < len(self.code):
                     if self.code[self.i] == "=":
-                        self.i += 2
-                        return [":=", self.Special_Symbols[":="]]
+                        if not self.inside_comment:
+                            self.i += 2
+                            return [":=", self.Special_Symbols[":="]]
+                        else:
+                            self.i += 1
+                            return self.get_next_token()
                     else:
                         self.i += 1
                         return self.get_next_token()
@@ -78,10 +83,20 @@ class Scanner:
             else:
                 if self.code[self.i - 1] == "{":
                     self.inside_comment = True
-                if self.code[self.i - 1] == "}":
+                    self.i += 1
+                    return [self.code[self.i - 2], self.Special_Symbols[self.code[self.i - 2]]]
+                elif self.code[self.i - 1] == "}":
                     self.inside_comment = False
-                self.i += 1
-                return [self.code[self.i - 2], self.Special_Symbols[self.code[self.i - 2]]]
+                    self.i += 1
+                    return [self.code[self.i - 2], self.Special_Symbols[self.code[self.i - 2]]]
+                else:
+                    if not self.inside_comment:
+                        self.i += 1
+                        return [self.code[self.i - 2], self.Special_Symbols[self.code[self.i - 2]]]
+                    else:
+                        self.i += 1
+                        return self.get_next_token()
+
         elif self.code[self.i - 1] == " ":
             self.i += 1
             return self.get_next_token()
@@ -89,21 +104,24 @@ class Scanner:
             self.i += 1
             return self.get_next_token()
         elif self.code[self.i - 1].isdigit():
-            temp3 = self.code[self.i - 1]
-            self.i += 1
-            while True:
-                if self.i <= len(self.code):
-                    if self.code[self.i - 1].isdigit():
-                        temp3 += self.code[self.i - 1]
-                        self.i += 1
+            if not self.inside_comment:
+                temp3 = self.code[self.i - 1]
+                self.i += 1
+                while True:
+                    if self.i <= len(self.code):
+                        if self.code[self.i - 1].isdigit():
+                            temp3 += self.code[self.i - 1]
+                            self.i += 1
+                        else:
+                            break
                     else:
                         break
-                else:
-                    break
-            return [temp3, "NUMBER"]
+                return [temp3, "NUMBER"]
+            else:
+                self.i += 1
+                return self.get_next_token()
         else:
             temp = ""
-            #temp2 = ""
             if self.code[self.i - 1].isalpha():
                 if self.inside_comment:
                     # print(self.inside_comment)
@@ -111,7 +129,7 @@ class Scanner:
                         if j <= len(self.code):
                             if self.code[j - 1] != "}":
                                 if self.code[j - 1] == "{":
-                                    #self.inside_comment = False
+                                    # self.inside_comment = False
                                     self.i = j
                                     return self.get_next_token()
                                 j += 1
@@ -144,8 +162,12 @@ class Scanner:
                                 self.i = j
                                 return [temp, "IDENTIFIER"]
             else:
-                self.i += 1
-                return self.get_next_token()
+                if not self.inside_comment:
+                    self.i += 1
+                    return [self.code[self.i - 2], "ILLEGAL_SYMBOL"]
+                else:
+                    self.i += 1
+                    return self.get_next_token()
 
     def scan(self):
         gui_show_list = []
@@ -155,7 +177,6 @@ class Scanner:
                 gui_show_tuple = (str(next_token[0]), str(next_token[1]))
                 gui_show_list.append(gui_show_tuple)
         return gui_show_list
-
 
 # this main is used to test Scanner class
 # if __name__ == "__main__":
