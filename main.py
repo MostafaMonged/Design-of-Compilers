@@ -1,12 +1,17 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt, QFile
+from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWidgets import *
+from PyQt5.uic import loadUiType
 
 from Scanner import Scanner
 
 css = """QMainWindow {
     background-color: #333;
     color: #fff;
+}
+
+QTabWidget::item {
+    background-color: #333;
 }
 
 QTextEdit, QLineEdit {
@@ -54,10 +59,16 @@ QTableWidget::item:selected {
 }
 """
 
+# Load the .ui file and generate the corresponding class dynamically
+Ui_MainWindow, _ = loadUiType("./CompilerGUI.ui")
 
-class MyGUI(QMainWindow):
+
+class MyGUI(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MyGUI, self).__init__()
+
+        # Set up the user interface
+        self.setupUi(self)
 
         # Creating the main window
         self.setGeometry(100, 100, 850, 600)
@@ -77,72 +88,35 @@ class MyGUI(QMainWindow):
         # Load the css
         self.setStyleSheet(css)
 
-        # Creating the widgets
-        main_widget = QWidget(self)
-        left_widget = QWidget(self)
-        middle_widget = QWidget(self)
-        right_widget = QWidget(self)
-        self.setCentralWidget(main_widget)
-
-        # Creating the layouts
-        layout = QHBoxLayout()
-        left_layout = QVBoxLayout()
-        middle_layout = QVBoxLayout()
-        right_layout = QVBoxLayout()
-        layout.addWidget(left_widget)
-        layout.addWidget(middle_widget)
-        layout.addWidget(right_widget)
-
-        # Input label
-        self.input_label = QLabel("Input:")
-        left_layout.addWidget(self.input_label)
-
         # Text box for code input
-        self.code_editor = QTextEdit()
-        left_layout.addWidget(self.code_editor)
+        self.code_editor = self.textEdit
 
-        # Load File button
-        load_button = QPushButton("Load File")
-        load_button.clicked.connect(self.loadFile)
-        middle_layout.addWidget(load_button)
+        # Load File button action listener
+        self.Load_File.clicked.connect(self.loadFile)
 
-        # Scan button
-        scan_button = QPushButton("Scan")
-        scan_button.clicked.connect(self.scanCode)
-        middle_layout.addWidget(scan_button)
+        # Scan button action listener
+        self.Scan.clicked.connect(self.scanCode)
 
-        # Parse button
-        parse_button = QPushButton("Parse")
-        parse_button.clicked.connect(self.parseCode)
-        middle_layout.addWidget(parse_button)
+        # Parse button action listener
+        self.Parse.clicked.connect(self.parseCode)
 
-        # Export button
-        export_button = QPushButton("Export File")
-        export_button.clicked.connect(self.exportFile)
-        middle_layout.addWidget(export_button)
+        # Export button action listener
+        self.Export_File.clicked.connect(self.exportFile)
 
-        # Output label
-        self.output_label = QLabel("Output:")
-        right_layout.addWidget(self.output_label)
+        # Clear button action listener
+        self.Clear.clicked.connect(self.clear_all)
 
         # Table for output display
-        self.output_table = QTableWidget(self)
+        self.output_table = self.tableWidget
         self.output_table.setColumnCount(2)  # Two columns for the tuple elements
         self.output_table.setHorizontalHeaderLabels(["Token", "Type"])  # Column headers
         self.output_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.output_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        right_layout.addWidget(self.output_table)
-
-        # Setting the layout
-        left_widget.setLayout(left_layout)
-        middle_widget.setLayout(middle_layout)
-        right_widget.setLayout(right_layout)
-        main_widget.setLayout(layout)
 
     def loadFile(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(
-            self, "Open File", "", "All Files (*);;Text Files (*.txt)", options=options
+            self, "Open File", "", "Text Files (*.txt)", options=options
         )
 
         if file_name:
@@ -181,7 +155,11 @@ class MyGUI(QMainWindow):
                 for row in range(self.output_table.rowCount()):
                     column1 = self.output_table.item(row, 0).text()
                     column2 = self.output_table.item(row, 1).text()
-                    file.write(f"{column1}\t{column2}\n")
+                    file.write(f"{column1}\t\t{column2}\n")
+
+    def clear_all(self):
+        self.output_table.setRowCount(0)
+        self.code_editor.setPlainText("")
 
 
 if __name__ == "__main__":
