@@ -90,39 +90,65 @@ class MyGUI(QMainWindow, Ui_MainWindow):
             self.output_table.setItem(rowPosition, 1, QTableWidgetItem(str(item[1])))
 
     def parseCode(self):
-        node1 = Node(tokens=["token1", "type1"])
-        node2 = Node(tokens=["token2", "type2"])
-        node3 = Node(tokens=["token3", "type3"])
+        # Create a root node
+        root_node = Node(tokens=["root", "root_type"])
 
-        # Link nodes as neighbors
-        node1.add_neighbor(node2)
+        # Add some sample structure
+        child1 = Node(tokens=["child1", "child1_type"])
+        child2 = Node(tokens=["child2", "child2_type"])
+        root_node.add_child(child1)
 
-        # Add children to a node
-        node1.add_child(node3)
+        child1.add_neighbor(child2)
 
+        # Creating the graph
         parse_tree = nx.Graph()
 
-        # Add nodes
-        parse_tree.add_node("Statement")
-        parse_tree.add_node("Assignment")
-        parse_tree.add_node("Variable")
-        parse_tree.add_node("Expression")
-        parse_tree.add_node("Term")
-        parse_tree.add_node("Factor")
+        # Add nodes and edges recursively
+        self.addNodesAndEdges(parse_tree, root_node)
 
-        # Add edges
-        parse_tree.add_edge("Statement", "Assignment")
-        parse_tree.add_edge("Assignment", "Variable")
-        parse_tree.add_edge("Assignment", "Expression")
-        parse_tree.add_edge("Expression", "Term")
-        parse_tree.add_edge("Term", "Factor")
+        # Creating positions
+        pos = self.assignNodePositions(parse_tree, root_node)
 
         # Display the parse tree in the second tab
         self.clearParseTree()
-        self.displayParseTree(parse_tree)
+        self.displayParseTree(parse_tree, pos)
         self.Tab_Widget.setCurrentIndex(1)
 
-    def displayParseTree(self, parse_tree):
+    def addNodesAndEdges(self, parse_tree, current_node):
+        # Add the current node
+        parse_tree.add_node(current_node.tokens[0])
+
+        if current_node.neighbor is not None:
+            parse_tree.add_node(current_node.neighbor.tokens[0])
+            parse_tree.add_edge(current_node.tokens[0], current_node.neighbor.tokens[0])
+            self.addNodesAndEdges(parse_tree, current_node.neighbor)
+
+        i = 0
+        # Recursively add nodes and edges for children
+        for child in current_node.children:
+            parse_tree.add_edge(current_node.tokens[0], current_node.children[i].tokens[0])
+            self.addNodesAndEdges(parse_tree, child)
+            i = i + 1
+
+    def assignNodePositions(self, parse_tree, current_node, pos=None, level=0, sibling_index=0):
+        if pos is None:
+            pos = {}
+
+        # Calculate position based on level and sibling index
+        x = sibling_index
+        y = -level
+
+        # Assign position for the current node
+        pos[current_node.tokens[0]] = (x, y)
+
+        pos = self.assignNodePositions(parse_tree, current_node.neighbor, pos, level)
+
+        for i, child in enumerate(current_node.children):
+            pos = self.assignNodePositions(parse_tree, child, pos, level + 1, i)
+
+        return pos
+
+    def displayParseTree(self, parse_tree, pos):
         # Create a QGraphicsScene to display the parse tree
         scene = QGraphicsScene()
 
@@ -134,10 +160,8 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         fig = Figure(figsize=(10.4, 6.75))
         ax = fig.add_subplot()
 
-        # Set positions manually to ensure arrows are displayed
-        pos = nx.shell_layout(parse_tree)
-
-        nx.draw_networkx(parse_tree, pos=pos, with_labels=True, arrows=True, ax=ax, edge_color='black')
+        nx.draw_networkx(parse_tree, pos=pos, with_labels=True, arrows=True, ax=ax, edge_color='black', node_size=3000,
+                         node_shape='o')
 
         # Save the parse tree visualization to a temporary file
         temp_file = "parse_tree.png"
