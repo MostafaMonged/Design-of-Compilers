@@ -90,7 +90,6 @@ class MyGUI(QMainWindow, Ui_MainWindow):
             self.output_table.setItem(rowPosition, 1, QTableWidgetItem(str(item[1])))
 
     def parseCode(self):
-
         parser.another_code(scanner.scan())
         root_node = parser.parse()
 
