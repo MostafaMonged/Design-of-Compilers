@@ -43,7 +43,7 @@
       </property>
       <widget class="QWidget" name="MainTab">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>Main Tab</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -137,7 +137,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QWidget" name="ParseTree_Tab">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>Parse Tree</string>
        </attribute>
       </widget>
      </widget>

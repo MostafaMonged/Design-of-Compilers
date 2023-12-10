@@ -9,6 +9,7 @@ from Scanner import Scanner
 
 # Load the .ui file and generate the corresponding class dynamically
 Ui_MainWindow, _ = loadUiType("./CompilerGUI.ui")
+terminals = ["IDENTIFIER", "NUMBER", "OP"]
 
 
 class MyGUI(QMainWindow, Ui_MainWindow):
@@ -90,13 +91,14 @@ class MyGUI(QMainWindow, Ui_MainWindow):
 
     def parseCode(self):
 
+        parser.another_code(scanner.scan())
         root_node = parser.parse()
 
         # Creating the graph
         parse_tree = nx.Graph()
 
         labels = {}
-        shapes = {}
+        shapes = []
 
         # Add nodes and edges recursively
         self.addNodesAndEdges(parse_tree, root_node, labels, shapes)
@@ -112,19 +114,20 @@ class MyGUI(QMainWindow, Ui_MainWindow):
     def addNodesAndEdges(self, parse_tree, current_node, labels, shapes):
         # Add the current node
         parse_tree.add_node(id(current_node))
-        shapes[id(current_node)] = 's'
+        if current_node.node_type in terminals:
+            shapes.append('o')
+        else:
+            shapes.append('s')
         labels[id(current_node)] = current_node.node_type + "\n" + current_node.node_value
 
         if current_node.sibling is not None:
             parse_tree.add_edge(id(current_node), id(current_node.sibling))
             self.addNodesAndEdges(parse_tree, current_node.sibling, labels, shapes)
 
-        i = 0
         # Recursively add nodes and edges for children
-        for child in current_node.children:
+        for i, child in enumerate(current_node.children):
             parse_tree.add_edge(id(current_node), id(current_node.children[i]))
             self.addNodesAndEdges(parse_tree, child, labels, shapes)
-            i = i + 1
 
     def assignNodePositions(self, parse_tree, current_node, pos=None, x=0, y=0):
         if pos is None:
@@ -155,7 +158,13 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         fig = Figure(figsize=(10.4, 6.75))
         ax = fig.add_subplot()
 
-        nx.draw_networkx(parse_tree, pos=pos, with_labels=False, ax=ax, node_size=4000)
+        for i, node in enumerate(parse_tree.nodes()):
+            parse_tree.nodes[node]['shape'] = shapes[i]
+
+        for shape in set(shapes):
+            node_list = [node for node in parse_tree.nodes() if parse_tree.nodes[node]['shape'] == shape]
+            nx.draw_networkx_nodes(parse_tree, pos=pos, ax=ax, node_size=4000, node_shape=shape, nodelist=node_list)
+        nx.draw_networkx_edges(parse_tree, pos=pos, ax=ax)
         nx.draw_networkx_labels(parse_tree, pos=pos, labels=labels, ax=ax)
 
         # Save the parse tree visualization to a temporary file
