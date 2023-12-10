@@ -130,21 +130,18 @@ class MyGUI(QMainWindow, Ui_MainWindow):
             self.addNodesAndEdges(parse_tree, child)
             i = i + 1
 
-    def assignNodePositions(self, parse_tree, current_node, pos=None, level=0, sibling_index=0):
+    def assignNodePositions(self, parse_tree, current_node, pos=None, x=0, y=0):
         if pos is None:
             pos = {}
-
-        # Calculate position based on level and sibling index
-        x = sibling_index
-        y = -level
 
         # Assign position for the current node
         pos[current_node.tokens[0]] = (x, y)
 
-        pos = self.assignNodePositions(parse_tree, current_node.neighbor, pos, level)
+        if current_node.neighbor is not None:
+            pos = self.assignNodePositions(parse_tree, current_node.neighbor, pos, x + 1, y)
 
         for i, child in enumerate(current_node.children):
-            pos = self.assignNodePositions(parse_tree, child, pos, level + 1, i)
+            pos = self.assignNodePositions(parse_tree, child, pos, x - 1 + i, y - 1)
 
         return pos
 
@@ -160,8 +157,7 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         fig = Figure(figsize=(10.4, 6.75))
         ax = fig.add_subplot()
 
-        nx.draw_networkx(parse_tree, pos=pos, with_labels=True, arrows=True, ax=ax, edge_color='black', node_size=3000,
-                         node_shape='o')
+        nx.draw_networkx(parse_tree, pos=pos, with_labels=True, arrows=True, ax=ax, edge_color='black', node_size=3000)
 
         # Save the parse tree visualization to a temporary file
         temp_file = "parse_tree.png"
