@@ -113,11 +113,16 @@ class MyGUI(QMainWindow, Ui_MainWindow):
     def addNodesAndEdges(self, parse_tree, current_node, labels, shapes):
         # Add the current node
         parse_tree.add_node(id(current_node))
+        
         if current_node.node_type in terminals:
             shapes.append('o')
         else:
             shapes.append('s')
-        labels[id(current_node)] = current_node.node_type + "\n" + current_node.node_value
+
+        if current_node.is_errored:
+            labels[id(current_node)] = current_node.node_type + "\n" + "Error"
+        else:
+            labels[id(current_node)] = current_node.node_type + "\n" + current_node.node_value
 
         if current_node.sibling is not None:
             parse_tree.add_edge(id(current_node), id(current_node.sibling))
