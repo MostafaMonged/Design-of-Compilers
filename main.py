@@ -11,6 +11,7 @@ from Scanner import Scanner
 Ui_MainWindow, _ = loadUiType("./CompilerGUI.ui")
 terminals = ["IDENTIFIER", "NUMBER", "OP"]
 
+
 class MyGUI(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MyGUI, self).__init__()
@@ -88,6 +89,13 @@ class MyGUI(QMainWindow, Ui_MainWindow):
             self.output_table.setItem(rowPosition, 1, QTableWidgetItem(str(item[1])))
 
     def parseCode(self):
+        self.scanCode()
+        if not self.scanner_output:
+            return
+        while ('{', 'COMMENTSTART') in self.scanner_output:
+            self.scanner_output.remove(('{', 'COMMENTSTART'))
+        while ('}', 'COMMENTEND') in self.scanner_output:
+            self.scanner_output.remove(('}', 'COMMENTEND'))
         parser.another_code(self.scanner_output)  # Modify this line monged
         root_node = parser.parse()
 
@@ -111,7 +119,7 @@ class MyGUI(QMainWindow, Ui_MainWindow):
     def addNodesAndEdges(self, parse_tree, current_node, labels, shapes):
         # Add the current node
         parse_tree.add_node(id(current_node))
-        
+
         if current_node.node_type in terminals:
             shapes.append('o')
         elif current_node.is_terminal:
