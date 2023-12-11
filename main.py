@@ -11,11 +11,10 @@ from Scanner import Scanner
 Ui_MainWindow, _ = loadUiType("./CompilerGUI.ui")
 terminals = ["IDENTIFIER", "NUMBER", "OP"]
 
-
 class MyGUI(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MyGUI, self).__init__()
-
+        self.scanner_output = None  # Add this line monged
         # Set up the user interface
         self.setupUi(self)
 
@@ -75,12 +74,11 @@ class MyGUI(QMainWindow, Ui_MainWindow):
 
     def scanCode(self):
         scanner.another_code(self.code_editor.toPlainText().rstrip())
-        scanner_output = scanner.scan()
-
+        self.scanner_output = scanner.scan()  # Modify this line monged
         # Clear the table before adding new data
         self.output_table.setRowCount(0)
 
-        for item in scanner_output:
+        for item in self.scanner_output:
             # Add a new row to the table
             rowPosition = self.output_table.rowCount()
             self.output_table.insertRow(rowPosition)
@@ -90,7 +88,7 @@ class MyGUI(QMainWindow, Ui_MainWindow):
             self.output_table.setItem(rowPosition, 1, QTableWidgetItem(str(item[1])))
 
     def parseCode(self):
-        parser.another_code(scanner.scan())
+        parser.another_code(self.scanner_output)  # Modify this line monged
         root_node = parser.parse()
 
         # Creating the graph
@@ -115,6 +113,8 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         parse_tree.add_node(id(current_node))
         
         if current_node.node_type in terminals:
+            shapes.append('o')
+        elif current_node.is_terminal:
             shapes.append('o')
         else:
             shapes.append('s')
