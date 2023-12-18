@@ -101,19 +101,25 @@ class Parser:
 
     def stmt_sequence(self):
         nodes = [self.statement()]
-
-        while self.current_token() == ";":
-            self.match(";")
-            if ((self.current_token() == "if" or self.current_token() == "repeat" or self.current_token() == "read" or self.current_token() == "write") or self.token_type() == "IDENTIFIER"):
-                nodes.append(self.statement())
-            else:
-                if self.statement != None:
-                    print("Error in Stmt Seq")
-                    error = Node("ERRORRRR", "ERROR")
-                    del nodes[-1]
-                    error.is_errored = True
-                    nodes.append(error)
-                
+        if self.current_token() != ";":
+            print("Missing ;")
+            error = Node("ERRORRRR", "ERROR")
+            del nodes[-1]
+            error.is_errored = True
+            nodes.append(error)
+        else:
+            while self.current_token() == ";":
+                self.match(";")
+                if ((self.current_token() == "if" or self.current_token() == "repeat" or self.current_token() == "read" or self.current_token() == "write") or self.token_type() == "IDENTIFIER"):
+                    nodes.append(self.statement())
+                else:
+                    if self.statement != None:
+                        print("Error in Stmt Seq")
+                        error = Node("ERRORRRR", "ERROR")
+                        del nodes[-1]
+                        error.is_errored = True
+                        nodes.append(error)
+        
         if len(nodes) > 1:
             for i in range(len(nodes) - 1):
                 nodes[i].sibling = nodes[i + 1]
@@ -142,10 +148,12 @@ class Parser:
     def if_stmt(self):
         if_node = Node("ERRORRRR", "IF")
         if(self.current_token() == "if"):
+            print("in if")
             self.match("if")
             condition = self.exp()
             if(self.current_token() == "then"):
                 self.match("then")
+                print("in then")
                 if_node.node_value = "if"
                 then_branch = self.stmt_sequence()
                 if self.current_token() == "else":
@@ -162,9 +170,11 @@ class Parser:
                     if_node.add_child(condition)
                     if_node.add_child(then_branch)
             else:
+                print("in if error")
                 if_node.is_errored = True
                 return if_node
         else:
+            print("in if error 2")
             if_node.is_errored = True
         return if_node
 
@@ -179,8 +189,13 @@ class Parser:
                 node.node_value = "repeat"
                 self.match("until")
                 condition = self.exp()
-                node.add_child(body)
-                node.add_child(condition)
+                if self.current_token() == ";":
+                    node.add_child(body)
+                    node.add_child(condition)
+                else:
+                    print("missing ; in until")
+                    node.is_errored = True
+                #needs to check for ; after until
             else:
                 print("3")
                 node.is_errored = True
