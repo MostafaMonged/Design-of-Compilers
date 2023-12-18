@@ -49,11 +49,9 @@ class Parser:
                 assign_node.add_child(self.exp())
             else: 
                 assign_node.is_errored = True
-                print("if 1")
                 print(self.current_token())
         else: 
             assign_node.is_errored = True
-            print("if 2")
             print(str(self.token_type()))
             print(self.tokens_list)
         return assign_node
@@ -103,18 +101,28 @@ class Parser:
 
     def stmt_sequence(self):
         nodes = [self.statement()]
+
         while self.current_token() == ";":
             self.match(";")
-            nodes.append(self.statement())
+            if ((self.current_token() == "if" or self.current_token() == "repeat" or self.current_token() == "read" or self.current_token() == "write") or self.token_type() == "IDENTIFIER"):
+                nodes.append(self.statement())
+            else:
+                if self.statement != None:
+                    print("Error in Stmt Seq")
+                    error = Node("ERRORRRR", "ERROR")
+                    del nodes[-1]
+                    error.is_errored = True
+                    nodes.append(error)
+                
         if len(nodes) > 1:
             for i in range(len(nodes) - 1):
                 nodes[i].sibling = nodes[i + 1]
         return nodes[0]
 
     def statement(self):
-        if self.current_token() == "end":
-            return None
-        elif self.current_token() == "if":
+        #if self.current_token() == "end":
+        #    return None
+        if self.current_token() == "if":
             return self.if_stmt()
         elif self.current_token() == "repeat":
             return self.repeat_stmt()
@@ -132,34 +140,53 @@ class Parser:
         #     return node
 
     def if_stmt(self):
-        self.match("if")
-        condition = self.exp()
-        self.match("then")
-        then_branch = self.stmt_sequence()
-        if self.current_token() == "else":
-            self.match("else")
-            else_branch = self.stmt_sequence()
-            self.match("end")
-            node = Node("if", "IF")
-            node.add_child(condition)
-            node.add_child(then_branch)
-            if else_branch:
-                node.add_child(else_branch)
+        if_node = Node("ERRORRRR", "IF")
+        if(self.current_token() == "if"):
+            self.match("if")
+            condition = self.exp()
+            if(self.current_token() == "then"):
+                self.match("then")
+                if_node.node_value = "if"
+                then_branch = self.stmt_sequence()
+                if self.current_token() == "else":
+                    self.match("else")
+                    else_branch = self.stmt_sequence()
+                    self.match("end")
+                    if_node.add_child(condition)
+                    if_node.add_child(then_branch)
+                    if else_branch:
+                        if_node.add_child(else_branch)
+                else:
+                    self.match("end")
+                    if_node = Node("if", "IF")
+                    if_node.add_child(condition)
+                    if_node.add_child(then_branch)
+            else:
+                if_node.is_errored = True
+                return if_node
         else:
-            self.match("end")
-            node = Node("if", "IF")
-            node.add_child(condition)
-            node.add_child(then_branch)
-        return node
+            if_node.is_errored = True
+        return if_node
 
     def repeat_stmt(self):
-        self.match("repeat")
-        body = self.stmt_sequence()
-        self.match("until")
-        condition = self.exp()
-        node = Node("", "REPEAT")
-        node.add_child(body)
-        node.add_child(condition)
+        node = Node("ERRORRRR", "REPEAT")
+        if self.current_token() == "repeat":
+            print("1")
+            self.match("repeat")
+            body = self.stmt_sequence()
+            if self.current_token() == "until":
+                print("2")
+                node.node_value = "repeat"
+                self.match("until")
+                condition = self.exp()
+                node.add_child(body)
+                node.add_child(condition)
+            else:
+                print("3")
+                node.is_errored = True
+        else:
+            print("4")
+            node.is_errored = True
         return node
 
     def simple_exp(self):
@@ -233,7 +260,7 @@ class Parser:
             an error message and creates an errored node.
             '''
         elif self.current_token() is not None:
-            print("Unexpected token: " + self.current_token())
+            #print("Unexpected token: " + self.current_token())
             root = Node(None, "ERROR")
             root.is_errored = True
         return root
