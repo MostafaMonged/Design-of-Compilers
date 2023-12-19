@@ -164,16 +164,31 @@ class Parser:
                 if self.current_token() == "else":
                     self.match("else")
                     else_branch = self.stmt_sequence()
-                    self.match("end")
+                    if self.current_token() == "end":
+                        self.match("end")
+                    else:
+                        if_node.is_errored = True
+                        return if_node
                     if_node.add_child(condition)
                     if_node.add_child(then_branch)
                     if else_branch:
                         if_node.add_child(else_branch)
                 else:
-                    self.match("end")
-                    if_node = Node("if", "IF")
-                    if_node.add_child(condition)
-                    if_node.add_child(then_branch)
+                    if self.current_token() == "end":
+                        self.match("end")
+                        print("end matched *******")
+                        if_node = Node("if", "IF")
+                        if_node.add_child(condition)
+                        if_node.add_child(then_branch)
+                    else:
+                        if_node.is_errored = True
+                        print("**** end not matched *******")
+                        if_node = Node("ERROR", "IF")
+                        return if_node
+                    # self.match("end")
+
+                    return if_node
+
             else:
                 print("in if error")
                 if_node.is_errored = True
@@ -269,21 +284,28 @@ class Parser:
             return temp
     
     def parse(self):
-        root = self.program()
-        if root.is_errored:
-            print("Error in program")
-            return root
+        try :
+            root = self.program()
+            if root.is_errored:
+                print("Error in program")
+                return root
             '''
             The elif code block is checking if there are any tokens left in the input after 
             parsing the program. If there are, it means that the input contains some tokens
             that were not expected according to the grammar of the language, so it prints
             an error message and creates an errored node.
             '''
-        # elif self.current_token() is not None:
-        #     #print("Unexpected token: " + self.current_token())
-        #     root = Node(None, "ERROR")
-        #     root.is_errored = True
+            # elif self.current_token() is not None:
+            #     #print("Unexpected token: " + self.current_token())
+            #     root = Node(None, "ERROR")
+            #     root.is_errored = True
 
-        print("root node value: " + str(root.node_value) + " root node type: " + str(root.node_type))
-        return root
+            print("root node value: " + str(root.node_value) + " root node type: " + str(root.node_type))
+            return root
+        except Exception as e:
+            x = Node(None, "syntax error")
+            x.is_errored =  True
+            return x
+
+
    

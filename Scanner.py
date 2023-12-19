@@ -190,17 +190,12 @@ class Scanner:
                 gui_show_list.append(gui_show_tuple)
         return gui_show_list
 
-# this main is used to test Scanner class
-# if __name__ == "__main__":
-#       sc = Scanner(code)
-# #     print(sc.scan())
-# #     print()
-# #     sc.another_code(code_sum)
-# #     print(sc.scan())
-#
-#     while not sc.finish:
-#         print(sc.get_next_token())
-#     print("*************another_code***********")
-#     sc.another_code(code_sum)
-#     while not sc.finish:
-#         print(sc.get_next_token())
+
+if __name__ == "__main__":
+    sc = Scanner()
+    while not sc.finish:
+        print(sc.get_next_token())
+    print("*************another_code***********")
+    sc.another_code(code_sum)
+    while not sc.finish:
+        print(sc.get_next_token())
