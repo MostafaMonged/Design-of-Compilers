@@ -113,16 +113,21 @@ class Parser:
                 if ((self.current_token() == "if" or self.current_token() == "repeat" or self.current_token() == "read" or self.current_token() == "write") or self.token_type() == "IDENTIFIER"):
                     nodes.append(self.statement())
                 else:
-                    if self.statement != None:
-                        print("Error in Stmt Seq")
-                        error = Node("ERRORRRR", "ERROR")
-                        del nodes[-1]
-                        error.is_errored = True
-                        nodes.append(error)
+                    # if self.statement != None:
+                    print("Error in Stmt Seq")
+                    error = Node("ERRORRRR", "ERROR")
+                    # del nodes[-1]
+                    error.is_errored = True
+                    nodes.append(error)
         
         if len(nodes) > 1:
             for i in range(len(nodes) - 1):
                 nodes[i].sibling = nodes[i + 1]
+        print("root nodes")
+        for i in range(len(nodes)):
+            print("node value: " + str(nodes[i].node_value) + " node type: " + str(nodes[i].node_type))
+        print("end root nodes")
+        print("nodes[0] value: " + str(nodes[0].node_value) + " nodes[0] type: " + str(nodes[0].node_type)+"\n")
         return nodes[0]
 
     def statement(self):
@@ -274,9 +279,11 @@ class Parser:
             that were not expected according to the grammar of the language, so it prints
             an error message and creates an errored node.
             '''
-        elif self.current_token() is not None:
-            #print("Unexpected token: " + self.current_token())
-            root = Node(None, "ERROR")
-            root.is_errored = True
+        # elif self.current_token() is not None:
+        #     #print("Unexpected token: " + self.current_token())
+        #     root = Node(None, "ERROR")
+        #     root.is_errored = True
+
+        print("root node value: " + str(root.node_value) + " root node type: " + str(root.node_type))
         return root
    

@@ -98,7 +98,7 @@ class MyGUI(QMainWindow, Ui_MainWindow):
             self.scanner_output.remove(('}', 'COMMENTEND'))
         parser.another_code(self.scanner_output)  # Modify this line monged
         root_node = parser.parse()
-        print(f"GUI: root node is {root_node.node_type}")
+        # print(f"GUI: root node is {root_node.node_type}")
 
         # Creating the graph
         parse_tree = nx.Graph()
@@ -128,7 +128,7 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         else:
             shapes.append('s')
 
-        print(f"GUI: node is {current_node.node_type}")
+        # print(f"GUI: node is {current_node.node_type}")
 
         if current_node.is_errored:
             labels[id(current_node)] = current_node.node_type + "\n" + "Error"
