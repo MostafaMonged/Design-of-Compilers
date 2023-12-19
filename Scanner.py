@@ -9,8 +9,7 @@ fact := fact * x;
 x := x - 1
 until x = 0;
 write fact { output factorial of x 
-}
-end"""
+}k"""
 
 code_sum = """{ Sample program in TINY language – computes sum of x and y}
 read x; {input an integer }
@@ -157,22 +156,27 @@ class Scanner:
                             return self.get_next_token()
 
                 else:
-                    while True:
-                        if self.code[j - 1].isalpha() and j < len(self.code):
-                            # print("self.code[j-1].isalpha(): "+str(self.code[j-1].isalpha()))
-                            temp += str(self.code[j - 1])
-                            j += 1
-                            if j == len(self.code) and self.code[j - 1].isalpha():
+                    if self.code[j - 1].isalpha() and j == len(self.code):
+                        temp += str(self.code[j - 1])
+                        self.finish = True
+                        return [temp, "IDENTIFIER"]
+                    else:
+                        while True:
+                            if self.code[j - 1].isalpha() and j < len(self.code):
+                                # print("self.code[j-1].isalpha(): "+str(self.code[j-1].isalpha()))
                                 temp += str(self.code[j - 1])
-                                self.finish = True
-                        else:
-                            # print(temp)
-                            if temp in self.Reserved_Words:
-                                self.i = j
-                                return [temp, self.Reserved_Words[temp]]
+                                j += 1
+                                if j == len(self.code) and self.code[j - 1].isalpha():
+                                    temp += str(self.code[j - 1])
+                                    self.finish = True
                             else:
-                                self.i = j
-                                return [temp, "IDENTIFIER"]
+                                # print(temp)
+                                if temp in self.Reserved_Words:
+                                    self.i = j
+                                    return [temp, self.Reserved_Words[temp]]
+                                else:
+                                    self.i = j
+                                    return [temp, "IDENTIFIER"]
             else:
                 if not self.inside_comment:
                     self.i += 1
@@ -193,9 +197,10 @@ class Scanner:
 
 if __name__ == "__main__":
     sc = Scanner()
+    sc.code= code
     while not sc.finish:
         print(sc.get_next_token())
-    print("*************another_code***********")
-    sc.another_code(code_sum)
-    while not sc.finish:
-        print(sc.get_next_token())
+    # print("*************another_code***********")
+    # sc.another_code(code_sum)
+    # while not sc.finish:
+    #     print(sc.get_next_token())
