@@ -6,6 +6,7 @@ class Parser:
         self.index = 0
         self.error_flag = 0
         self.OP = ["+", "-", "*", "/", "<", "="]
+        self.syntax_error_exist = False
 
     def match(self, parameter_from_grammar):
         if self.tokens_list[self.index][0] == parameter_from_grammar:#edit
@@ -17,6 +18,8 @@ class Parser:
     def another_code(self, scanner_output):
         self.tokens_list = scanner_output
         self.index = 0
+        self.syntax_error_exist = False
+
 
     def current_token(self):
             return self.tokens_list[self.index][0] if self.index < len(self.tokens_list) else None
@@ -38,13 +41,15 @@ class Parser:
     #============= starting the grammar procedures ==================
     def program(self):
         root = self.stmt_sequence()
-        if self.current_token() is not None:
+        if self.current_token() is not None and self.syntax_error_exist == False:
             print("program has syntax error")
             error = Node("ERRORRRR", "ERROR")
             error.is_errored = True
             temp = root
+            # if not temp.is_errored:
             while temp.sibling is not None:
                 temp = temp.sibling
+                # if not temp.is_errored:
             temp.sibling = error
         return root
     
@@ -58,9 +63,11 @@ class Parser:
                 assign_node.add_child(self.exp())
             else: 
                 assign_node.is_errored = True
+                self.syntax_error_exist = True
                 print(self.current_token())
         else: 
             assign_node.is_errored = True
+            self.syntax_error_exist = True
             print(str(self.token_type()))
             print(self.tokens_list)
         return assign_node
@@ -74,8 +81,10 @@ class Parser:
                 self.match(self.current_token())
             else: 
                 read_node.is_errored = True
+                self.syntax_error_exist = True
         else:
             read_node.is_errored = True
+            self.syntax_error_exist = True
         return read_node
 
     def write_stmt(self):
@@ -86,6 +95,7 @@ class Parser:
             write_node.add_child(self.exp())
         else:
             write_node.is_errored = True
+            self.syntax_error_exist = True
         return write_node
 
     def exp(self):
@@ -106,18 +116,19 @@ class Parser:
             self.match(self.current_token())
         else:
             operator_node.is_errored = True
+            self.syntax_error_exist = True
         return operator_node
 
     def stmt_sequence(self):
         nodes = [self.statement()]
         if not nodes[-1].is_errored:
-            if self.current_token() is not None:
-                if self.current_token() != ";":
-                    print("Missing ;")
-                    error = Node("ERRORRRR", "ERROR")
-                    # del nodes[-1]
-                    error.is_errored = True
-                    nodes.append(error)
+            # if self.current_token() is not None:
+            #     if self.current_token() != ";":
+            #         print("Missing ;")
+            #         error = Node("ERRORRRR", "ERROR")
+            #         # del nodes[-1]
+            #         error.is_errored = True
+            #         nodes.append(error)
             # else:
             while self.current_token() == ";":
                 self.match(";")
@@ -129,6 +140,7 @@ class Parser:
                     error = Node("ERRORRRR", "ERROR")
                     # del nodes[-1]
                     error.is_errored = True
+                    self.syntax_error_exist = True
                     nodes.append(error)
         if len(nodes) > 1:
             for i in range(len(nodes) - 1):
@@ -154,8 +166,10 @@ class Parser:
         elif str(self.token_type()) == "IDENTIFIER":
             return self.assign_stmt()
         else:
+            print("statement error")
             node = Node(None, "ERROR")
             node.is_errored = True
+            self.syntax_error_exist = True
             return node
 
         #the error that makes me cryyyyyy
@@ -183,6 +197,7 @@ class Parser:
                         self.match("end")
                     else:
                         if_node.is_errored = True
+                        self.syntax_error_exist = True
                         return if_node
                     if_node.add_child(condition)
                     if_node.add_child(then_branch)
@@ -197,6 +212,7 @@ class Parser:
                         if_node.add_child(then_branch)
                     else:
                         if_node.is_errored = True
+                        self.syntax_error_exist = True
                         print("**** end not matched *******")
                         if_node = Node("ERROR", "IF")
                         return if_node
@@ -207,10 +223,12 @@ class Parser:
             else:
                 print("in if error")
                 if_node.is_errored = True
+                self.syntax_error_exist = True
                 return if_node
         else:
             print("in if error 2")
             if_node.is_errored = True
+            self.syntax_error_exist = True
         return if_node
 
     def repeat_stmt(self):
@@ -236,9 +254,11 @@ class Parser:
             else:
                 print("3")
                 node.is_errored = True
+                self.syntax_error_exist = True
         else:
             print("4")
             node.is_errored = True
+            self.syntax_error_exist = True
         return node
 
     def simple_exp(self):
@@ -259,6 +279,7 @@ class Parser:
             self.match(self.current_token())
         else:
             operator_node.is_errored = True
+            self.syntax_error_exist = True
         return operator_node
 
     def term(self):
@@ -279,6 +300,7 @@ class Parser:
             self.match(self.current_token())
         else:
             operator_node.is_errored = True
+            self.syntax_error_exist = True
         return operator_node
 
     def factor(self):
@@ -298,6 +320,7 @@ class Parser:
         else:
             temp = Node("ERRORRRR", "ERROR")
             temp.is_errored = True
+            self.syntax_error_exist = True
             return temp
     
     def parse(self):
