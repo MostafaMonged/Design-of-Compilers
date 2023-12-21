@@ -20,7 +20,7 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Creating the main window
-        self.setGeometry(100, 100, 850, 600)
+        self.setGeometry(100, 100, 1200, 865)
         self.setWindowTitle("Scanner Application")
 
         # Center the main window on the screen
@@ -170,7 +170,7 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         parse_tree_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # Draw the parse tree using networkx and matplotlib
-        fig = Figure(figsize=(10.4, 6.75))
+        fig = Figure(figsize=(14.9, 10.2))
         ax = fig.add_subplot()
 
         for i, node in enumerate(parse_tree.nodes()):
