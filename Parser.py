@@ -37,7 +37,16 @@ class Parser:
 
     #============= starting the grammar procedures ==================
     def program(self):
-        return self.stmt_sequence()
+        root = self.stmt_sequence()
+        if self.current_token() is not None:
+            print("program has syntax error")
+            error = Node("ERRORRRR", "ERROR")
+            error.is_errored = True
+            temp = root
+            while temp.sibling is not None:
+                temp = temp.sibling
+            temp.sibling = error
+        return root
     
     def assign_stmt(self):
         assign_node = Node("ERRORRRR", "ASSIGN")
@@ -101,13 +110,15 @@ class Parser:
 
     def stmt_sequence(self):
         nodes = [self.statement()]
-        if self.current_token() != ";":
-            print("Missing ;")
-            error = Node("ERRORRRR", "ERROR")
-            del nodes[-1]
-            error.is_errored = True
-            nodes.append(error)
-        else:
+        if not nodes[-1].is_errored:
+            if self.current_token() is not None:
+                if self.current_token() != ";":
+                    print("Missing ;")
+                    error = Node("ERRORRRR", "ERROR")
+                    # del nodes[-1]
+                    error.is_errored = True
+                    nodes.append(error)
+            # else:
             while self.current_token() == ";":
                 self.match(";")
                 if ((self.current_token() == "if" or self.current_token() == "repeat" or self.current_token() == "read" or self.current_token() == "write") or self.token_type() == "IDENTIFIER"):
@@ -119,7 +130,6 @@ class Parser:
                     # del nodes[-1]
                     error.is_errored = True
                     nodes.append(error)
-        
         if len(nodes) > 1:
             for i in range(len(nodes) - 1):
                 nodes[i].sibling = nodes[i + 1]
@@ -143,6 +153,11 @@ class Parser:
             return self.write_stmt()
         elif str(self.token_type()) == "IDENTIFIER":
             return self.assign_stmt()
+        else:
+            node = Node(None, "ERROR")
+            node.is_errored = True
+            return node
+
         #the error that makes me cryyyyyy
         #the error was that the token "end" is not handled
         # else:
@@ -209,12 +224,14 @@ class Parser:
                 node.node_value = "repeat"
                 self.match("until")
                 condition = self.exp()
-                if self.current_token() == ";":
-                    node.add_child(body)
-                    node.add_child(condition)
-                else:
-                    print("missing ; in until")
-                    node.is_errored = True
+                node.add_child(body)
+                node.add_child(condition)
+                # if self.current_token() == ";":
+                #     node.add_child(body)
+                #     node.add_child(condition)
+                # else:
+                #     print("missing ; in until")
+                #     node.is_errored = True
                 #needs to check for ; after until
             else:
                 print("3")
