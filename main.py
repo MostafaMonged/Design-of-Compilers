@@ -93,9 +93,6 @@ class MyGUI(QMainWindow, Ui_MainWindow):
                 QMessageBox.critical(self, "Error", f"An error occurred while opening the file:\n{e}")
                 print(f"Error: {e}", file=sys.stderr)
 
-    # https: // drive.google.com / drive / folders / 1Y8bB3wFTgjCkdejNacE62eKkIdHUm4qd?usp = sharing
-    # https: // drive.google.com / drive / folders / 1Y8bB3wFTgjCkdejNacE62eKkIdHUm4qd?usp = sharing
-
     def scanCode(self):
         scanner.another_code(self.code_editor.toPlainText().rstrip())
         self.scanner_output = scanner.scan()  # Modify this line monged
