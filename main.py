@@ -1,3 +1,4 @@
+import sys
 import networkx as nx
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
@@ -62,6 +63,16 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         self.output_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.output_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
+    # def loadFile(self):
+    #     options = QFileDialog.Options()
+    #     file_name, _ = QFileDialog.getOpenFileName(
+    #         self, "Open File", "", "Text Files (*.txt)", options=options
+    #     )
+    #
+    #     if file_name:
+    #         with open(file_name, "r", encoding='utf-8') as file:
+    #             file_contents = file.read()
+    #             self.code_editor.setPlainText(file_contents)
     def loadFile(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(
@@ -69,9 +80,21 @@ class MyGUI(QMainWindow, Ui_MainWindow):
         )
 
         if file_name:
-            with open(file_name, "r", encoding='utf-8') as file:
-                file_contents = file.read()
-                self.code_editor.setPlainText(file_contents)
+            try:
+                with open(file_name, "r", encoding='utf-8') as file:
+                    file_contents = file.read()
+                    self.code_editor.setPlainText(file_contents)
+            except FileNotFoundError:
+                QMessageBox.critical(self, "Error",
+                                     "The file could not be found. Please check the file name and try again.")
+            except PermissionError:
+                QMessageBox.critical(self, "Error", "You do not have permission to open this file.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"An error occurred while opening the file:\n{e}")
+                print(f"Error: {e}", file=sys.stderr)
+
+    # https: // drive.google.com / drive / folders / 1Y8bB3wFTgjCkdejNacE62eKkIdHUm4qd?usp = sharing
+    # https: // drive.google.com / drive / folders / 1Y8bB3wFTgjCkdejNacE62eKkIdHUm4qd?usp = sharing
 
     def scanCode(self):
         scanner.another_code(self.code_editor.toPlainText().rstrip())
